@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class RegistrationServiceImplTest {
 
@@ -47,8 +48,21 @@ class RegistrationServiceImplTest {
     }
 
     @Test
-    void register_nullUser_NotOK() {
-        assertThrows(RegistrationException.class, () -> registrationService.register(null));
+    void register_nullUserLogin_NotOK() {
+        User user = new User("", "validPassword", 17);
+        assertThrows(RegistrationException.class, () -> registrationService.register(user));
+    }
+
+    @Test
+    void register_nullUserPassword_notOK() {
+        User user = new User("validLogin", "", 25);
+        assertThrows(RegistrationException.class, () -> registrationService.register(user));
+    }
+
+    @Test
+    void register_nullUserAge_NotOK() {
+        User user = new User("validLogin", "validPassword", 0);
+        assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
