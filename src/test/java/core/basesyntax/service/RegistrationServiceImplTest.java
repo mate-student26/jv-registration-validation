@@ -48,13 +48,13 @@ class RegistrationServiceImplTest {
 
     @Test
     void register_nullUserLogin_NotOK() {
-        User user = new User("", "validPassword", 17);
+        User user = new User(null, "validPassword", 17);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
     void register_nullUserPassword_notOK() {
-        User user = new User("validLogin", "", 25);
+        User user = new User("validLogin", null, 25);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
