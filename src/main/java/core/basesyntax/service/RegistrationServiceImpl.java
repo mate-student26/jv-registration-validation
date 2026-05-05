@@ -26,16 +26,32 @@ public class RegistrationServiceImpl implements RegistrationService {
         if (user.getPassword() == null) {
             throw new RegistrationException("Password can't be null");
         }
-        if (user.getAge() == null || user.getAge() < MIN_AGE) {
-            throw new RegistrationException("Age cannot be null and must be equal or above " + MIN_AGE);
+        if (user.getAge() == null) {
+            throw new RegistrationException("Age cannot be null");
         }
 
-        if (user.getLogin() == null || user.getLogin().length() < MIN_LOGIN_LENGTH) {
-            throw new RegistrationException("Login cannot be null and must have 6 or more characters");
+        if (user.getAge() < MIN_AGE) {
+            throw new RegistrationException("User age must be at least " + MIN_AGE
+                    + ". Actual age: " + user.getAge());
         }
 
-        if (user.getPassword() == null || user.getPassword().length() < MIN_PWD_LENGTH) {
-            throw new RegistrationException("Password cannot be null and must have 6 or more characters");
+        if (user.getLogin() == null) {
+            throw new RegistrationException("Login cannot be null");
+        }
+
+        if (user.getLogin().length() < MIN_LOGIN_LENGTH) {
+            throw new RegistrationException("Login must contain at least "
+                    + MIN_LOGIN_LENGTH + " characters");
+
+        }
+
+        if (user.getPassword().length() < MIN_PWD_LENGTH) {
+            throw new RegistrationException("Password must contain at least "
+                    + MIN_PWD_LENGTH + " characters");
+        }
+
+        if (user.getPassword() == null) {
+            throw new RegistrationException("Password cannot be null");
         }
 
         if (storageDao.get(user.getLogin()) != null) {

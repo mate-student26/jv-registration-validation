@@ -7,16 +7,18 @@ import core.basesyntax.dao.StorageDao;
 import core.basesyntax.exception.RegistrationException;
 import core.basesyntax.model.User;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class RegistrationServiceImplTest {
+    private static final String VALID_LOGIN = "validLogin";
+    private static final String VALID_PASSWORD = "validPassword";
+    private static final int INVALID_AGE = 17;
+    private static final int MIN_VALID_AGE = 18;
 
     @Mock
     private StorageDao storageDao;
@@ -24,20 +26,14 @@ class RegistrationServiceImplTest {
     @InjectMocks
     private RegistrationServiceImpl registrationService;
 
-    @BeforeEach
-    void setUp() {
-        storageDao = Mockito.mock(StorageDao.class);
-        registrationService = new RegistrationServiceImpl(storageDao);
-    }
-
     @Test
-    void register_nullUser_NotOK() {
+    void register_nullUser_notOk() {
         assertThrows(RegistrationException.class, () -> registrationService.register(null));
     }
 
     @Test
-    void register_validUser_OK() {
-        User user = new User("validLogin", "validPassword", 25);
+    void register_validUser_ok() {
+        User user = new User(VALID_LOGIN, VALID_PASSWORD, MIN_VALID_AGE);
         when(storageDao.get(user.getLogin())).thenReturn(null);
         when(storageDao.add(user)).thenReturn(user);
 
@@ -48,38 +44,38 @@ class RegistrationServiceImplTest {
     }
 
     @Test
-    void register_shortLogin_NotOK() {
-        User user = new User("log", "validPassword", 25);
+    void register_shortLogin_notOk() {
+        User user = new User("log", VALID_PASSWORD, MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_shortPassword_NotOK() {
-        User user = new User("validLogin", "pass", 25);
+    void register_shortPassword_notOk() {
+        User user = new User(VALID_LOGIN, "pass", MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_tooYoung_NotOK() {
-        User user = new User("validLogin", "validPassword", 17);
+    void register_tooYoung_notOk() {
+        User user = new User(VALID_LOGIN, VALID_PASSWORD, INVALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_nullUserLogin_NotOK() {
-        User user = new User(null, "validPassword", 17);
+    void register_nullLogin_notOk() {
+        User user = new User(null, VALID_PASSWORD, INVALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_5charsLogin_NotOK() {
-        User user = new User("valid", "validPassword", 17);
+    void register_5charsLogin_notOk() {
+        User user = new User("valid", VALID_PASSWORD, INVALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_6charsLogin_OK() {
-        User user = new User("validL", "validPassword", 18);
+    void register_6charsLogin_ok() {
+        User user = new User("validL", VALID_PASSWORD, MIN_VALID_AGE);
         when(storageDao.get(user.getLogin())).thenReturn(null);
         when(storageDao.add(user)).thenReturn(user);
 
@@ -90,26 +86,26 @@ class RegistrationServiceImplTest {
     }
 
     @Test
-    void register_emptyLogin_NotOK() {
-        User user = new User("", "validPassword", 18);
+    void register_emptyLogin_notOk() {
+        User user = new User("", VALID_PASSWORD, MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_nullUserPassword_notOK() {
-        User user = new User("validLogin", null, 25);
+    void register_nullPassword_notOk() {
+        User user = new User(VALID_LOGIN, null, MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_5charsPass_NotOK() {
-        User user = new User("validLogin", "valid", 19);
+    void register_5charsPass_notOk() {
+        User user = new User(VALID_LOGIN, "valid", MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_6charsPass_OK() {
-        User user = new User("validLogin", "validP", 18);
+    void register_6charsPass_ok() {
+        User user = new User(VALID_LOGIN, "validP", MIN_VALID_AGE);
         when(storageDao.get(user.getLogin())).thenReturn(null);
         when(storageDao.add(user)).thenReturn(user);
 
@@ -120,26 +116,26 @@ class RegistrationServiceImplTest {
     }
 
     @Test
-    void register_emptyPass_NotOK() {
-        User user = new User("validLogin", "", 18);
+    void register_emptyPass_notOk() {
+        User user = new User(VALID_LOGIN, "", MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_nullUserAge_NotOK() {
-        User user = new User("validLogin", "validPassword", null);
+    void register_nullAge_notOk() {
+        User user = new User(VALID_LOGIN, VALID_PASSWORD, null);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_negativeAge_NotOK() {
-        User user = new User("validLogin", "validPassword", -1);
+    void register_negativeAge_notOk() {
+        User user = new User(VALID_LOGIN, VALID_PASSWORD, -1);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
     @Test
-    void register_18age_OK() {
-        User user = new User("validLogin", "validPassword", 18);
+    void register_18age_ok() {
+        User user = new User(VALID_LOGIN, VALID_PASSWORD, MIN_VALID_AGE);
         when(storageDao.get(user.getLogin())).thenReturn(null);
         when(storageDao.add(user)).thenReturn(user);
 
@@ -149,12 +145,10 @@ class RegistrationServiceImplTest {
     }
 
     @Test
-    void register_loginExist_NotOK() {
-        User existingUser = new User("validLogin", "validPassword", 25);
+    void register_loginExist_notOk() {
+        User existingUser = new User(VALID_LOGIN, VALID_PASSWORD, MIN_VALID_AGE);
         when(storageDao.get(existingUser.getLogin())).thenReturn(existingUser);
-        User newUser = new User("validLogin", "newPassword", 25);
+        User newUser = new User(VALID_LOGIN, "newPassword", MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(newUser));
     }
-
-
 }
