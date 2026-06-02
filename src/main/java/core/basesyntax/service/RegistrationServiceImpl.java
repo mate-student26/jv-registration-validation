@@ -17,17 +17,27 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public User register(User user) {
         if (user == null) {
-            throw new RegistrationException("User cannot be null");
+            throw new RegistrationException("User can't be null");
+        }
+
+        if (user.getLogin() == "" || user.getLogin().contains(" ")) {
+            throw new RegistrationException("Login can't be empty");
         }
 
         if (user.getLogin() == null) {
             throw new RegistrationException("Login can't be null");
         }
+
         if (user.getPassword() == null) {
             throw new RegistrationException("Password can't be null");
         }
+
+        if (user.getPassword() == "" || user.getPassword().contains(" ")) {
+            throw new RegistrationException("Password can't be empty");
+        }
+
         if (user.getAge() == null) {
-            throw new RegistrationException("Age cannot be null");
+            throw new RegistrationException("Age can't be null");
         }
 
         if (user.getAge() < MIN_AGE) {
@@ -35,10 +45,13 @@ public class RegistrationServiceImpl implements RegistrationService {
                     + ". Actual age: " + user.getAge());
         }
 
+        if (user.getAge() < 0) {
+            throw new RegistrationException("User age can't be negative");
+        }
+
         if (user.getLogin().length() < MIN_LOGIN_LENGTH) {
             throw new RegistrationException("Login must contain at least "
                     + MIN_LOGIN_LENGTH + " characters");
-
         }
 
         if (user.getPassword().length() < MIN_PWD_LENGTH) {
@@ -47,7 +60,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         if (storageDao.get(user.getLogin()) != null) {
-            throw new RegistrationException("Login already exist");
+            throw new RegistrationException("Login already exists");
         }
         return storageDao.add(user);
     }
