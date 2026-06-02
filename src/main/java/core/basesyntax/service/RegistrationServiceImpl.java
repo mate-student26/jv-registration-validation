@@ -20,12 +20,12 @@ public class RegistrationServiceImpl implements RegistrationService {
             throw new RegistrationException("User can't be null");
         }
 
-        if (user.getLogin() == "" || user.getLogin().contains(" ")) {
-            throw new RegistrationException("Login can't be empty");
-        }
-
         if (user.getLogin() == null) {
             throw new RegistrationException("Login can't be null");
+        }
+
+        if (user.getLogin() == "" || user.getLogin().contains(" ")) {
+            throw new RegistrationException("Login can't be empty");
         }
 
         if (user.getPassword() == null) {
