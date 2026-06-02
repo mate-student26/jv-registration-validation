@@ -1,30 +1,28 @@
 package core.basesyntax.service;
 
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import core.basesyntax.dao.StorageDao;
+import core.basesyntax.dao.StorageDaoImpl;
+import core.basesyntax.db.Storage;
 import core.basesyntax.exception.RegistrationException;
 import core.basesyntax.model.User;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class RegistrationServiceImplTest {
     private static final String VALID_LOGIN = "validLogin";
     private static final String VALID_PASSWORD = "validPassword";
     private static final int INVALID_AGE = 17;
     private static final int MIN_VALID_AGE = 18;
-
-    @Mock
-    private StorageDao storageDao;
-
-    @InjectMocks
     private RegistrationServiceImpl registrationService;
+
+    @BeforeEach
+    void setUp() {
+        Storage.people.clear();
+        registrationService = new RegistrationServiceImpl(new StorageDaoImpl());
+    }
 
     @Test
     void register_nullUser_notOk() {
@@ -34,13 +32,11 @@ class RegistrationServiceImplTest {
     @Test
     void register_validUser_ok() {
         User user = new User(VALID_LOGIN, VALID_PASSWORD, MIN_VALID_AGE);
-        when(storageDao.get(user.getLogin())).thenReturn(null);
-        when(storageDao.add(user)).thenReturn(user);
-
         User result = registrationService.register(user);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals(user.getLogin(), result.getLogin());
+        assertNotNull(result);
+        assertEquals(user, result);
+        assertEquals(1, Storage.people.size());
+        assertEquals(user, Storage.people.get(0));
     }
 
     @Test
@@ -76,13 +72,8 @@ class RegistrationServiceImplTest {
     @Test
     void register_6charsLogin_ok() {
         User user = new User("validL", VALID_PASSWORD, MIN_VALID_AGE);
-        when(storageDao.get(user.getLogin())).thenReturn(null);
-        when(storageDao.add(user)).thenReturn(user);
-
         User result = registrationService.register(user);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals("validL", result.getLogin());
+        assertEquals("validL", result.getLogin());
     }
 
     @Test
@@ -106,13 +97,8 @@ class RegistrationServiceImplTest {
     @Test
     void register_6charsPass_ok() {
         User user = new User(VALID_LOGIN, "validP", MIN_VALID_AGE);
-        when(storageDao.get(user.getLogin())).thenReturn(null);
-        when(storageDao.add(user)).thenReturn(user);
-
         User result = registrationService.register(user);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals("validP", result.getPassword());
+        assertEquals("validP", result.getPassword());
     }
 
     @Test
@@ -136,18 +122,14 @@ class RegistrationServiceImplTest {
     @Test
     void register_18age_ok() {
         User user = new User(VALID_LOGIN, VALID_PASSWORD, MIN_VALID_AGE);
-        when(storageDao.get(user.getLogin())).thenReturn(null);
-        when(storageDao.add(user)).thenReturn(user);
-
         User result = registrationService.register(user);
-        Assert.assertNotNull(result);
-        Assert.assertEquals("validLogin", result.getLogin());
+        assertEquals("validLogin", result.getLogin());
     }
 
     @Test
-    void register_loginExist_notOk() {
+    void register_existingLogin_notOk() {
         User existingUser = new User(VALID_LOGIN, VALID_PASSWORD, MIN_VALID_AGE);
-        when(storageDao.get(existingUser.getLogin())).thenReturn(existingUser);
+        Storage.people.add(existingUser);
         User newUser = new User(VALID_LOGIN, "newPassword", MIN_VALID_AGE);
         assertThrows(RegistrationException.class, () -> registrationService.register(newUser));
     }

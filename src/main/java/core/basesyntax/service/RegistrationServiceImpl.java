@@ -35,10 +35,6 @@ public class RegistrationServiceImpl implements RegistrationService {
                     + ". Actual age: " + user.getAge());
         }
 
-        if (user.getLogin() == null) {
-            throw new RegistrationException("Login cannot be null");
-        }
-
         if (user.getLogin().length() < MIN_LOGIN_LENGTH) {
             throw new RegistrationException("Login must contain at least "
                     + MIN_LOGIN_LENGTH + " characters");
@@ -48,10 +44,6 @@ public class RegistrationServiceImpl implements RegistrationService {
         if (user.getPassword().length() < MIN_PWD_LENGTH) {
             throw new RegistrationException("Password must contain at least "
                     + MIN_PWD_LENGTH + " characters");
-        }
-
-        if (user.getPassword() == null) {
-            throw new RegistrationException("Password cannot be null");
         }
 
         if (storageDao.get(user.getLogin()) != null) {
