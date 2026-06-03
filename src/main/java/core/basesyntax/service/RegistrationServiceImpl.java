@@ -24,7 +24,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             throw new RegistrationException("Login can't be null");
         }
 
-        if (user.getLogin() == "" || user.getLogin().contains(" ")) {
+        if (user.getLogin().equals("") || user.getLogin().contains(" ")) {
             throw new RegistrationException("Login can't be empty");
         }
 
@@ -32,7 +32,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             throw new RegistrationException("Password can't be null");
         }
 
-        if (user.getPassword() == "" || user.getPassword().contains(" ")) {
+        if (user.getPassword().equals("") || user.getPassword().contains(" ")) {
             throw new RegistrationException("Password can't be empty");
         }
 
@@ -43,10 +43,6 @@ public class RegistrationServiceImpl implements RegistrationService {
         if (user.getAge() < MIN_AGE) {
             throw new RegistrationException("User age must be at least " + MIN_AGE
                     + ". Actual age: " + user.getAge());
-        }
-
-        if (user.getAge() < 0) {
-            throw new RegistrationException("User age can't be negative");
         }
 
         if (user.getLogin().length() < MIN_LOGIN_LENGTH) {
